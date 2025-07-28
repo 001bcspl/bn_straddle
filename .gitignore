@@ -1,0 +1,7 @@
+key.py
+logs/
+__pycache__/
+*.pyc
+*.log
+.env
+'from kiteconnect import kiteConnect'
