@@ -25,7 +25,7 @@
 - 1. bank_ce_pe_sty50_V4.py : ATM Strike, 50-point CE/PE strategy.
 - 2. bank_ce_pe_sty100_V4.py: ATM Strike, 100-point CE/PE strategy
 - **Usage** :python3 bank_ce_pe_sty50_V4.py or python3 bank_ce_pe_sty100_V4.py
-- *bank_cep_pe_stg1_V4.py* and *nifty_ce_pe_stg1_V4.py* are updated version of Version4.
+- *bank_ce_pe_stg1_V4.py* and *nifty_ce_pe_stg1_V4.py* are updated version of Version4.
   
 # **Version 5:**
 - To be done
