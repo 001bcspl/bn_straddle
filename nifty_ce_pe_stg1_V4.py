@@ -400,19 +400,20 @@ if __name__ == '__main__':
     # Create the file name date and time as variable
     now = datetime.now(tz=ZoneInfo('Asia/Kolkata'))
     if offline == 0:
-        OUTPUT_FILE = now.strftime("./logs_50/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_online.xlsx")
+        OUTPUT_FILE = now.strftime("./logs_nifty/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty_straddle_online.xlsx")
     else:
-        OUTPUT_FILE = now.strftime("./logs_50/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_offline.xlsx")
+        OUTPUT_FILE = now.strftime("./logs_nifty/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty_straddle_offline.xlsx")
 
     if offline == 0:
-        lfile = now.strftime("./logs_50/lfile/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_online.txt")
+        lfile = now.strftime("./logs_nifty/lfile/%Y%m%d_%H%M_dual_crossover_nifty_straddle_online.txt")
     else:
-        lfile = now.strftime("./logs_50/lfile/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_offline.txt")
+        lfile = now.strftime("./logs_nifty/lfile/%Y%m%d_%H%M_dual_crossover_nifty_straddle_offline.txt")
     day = now.strftime("%Y%m%d")
     print("creating log file --> ", lfile)
     
-    os.makedirs('./logs_50/Excel_File', exist_ok=True)
-    os.makedirs('./logs_50/lfile', exist_ok=True)
+    os.makedirs('./logs_nifty/Charts', exist_ok=True)
+    os.makedirs('./logs_nifty/Excel_File', exist_ok=True)
+    os.makedirs('./logs_nifty/lfile', exist_ok=True)
 
 
     with open(f'{lfile}', 'w', encoding='utf-8') as f:
@@ -421,7 +422,7 @@ if __name__ == '__main__':
         f.write('---------------------------------------------------------' + '\n')
 
     filename = lfile
-    file1 = open("./logs_50/dual_straddle_945am", "a")
+    file1 = open("./logs_nifty/dual_straddle_945am", "a")
     papertrade = 0
 
     atm_strike = round_to_multiple(getCMP('NSE:NIFTY 50'), 50)
@@ -605,9 +606,9 @@ if __name__ == '__main__':
 
                     # Save chart before breaking
                     if offline == 0: 
-                        chart_filename = now.strftime("./logs_50/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_online.png")
+                        chart_filename = now.strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_online.png")
                     else:
-                        chart_filename = now.strftime("./logs_50/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_offline.png")
+                        chart_filename = now.strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_offline.png")
                     fig.savefig(chart_filename, dpi=300)
                     print(f"Chart saved as: {chart_filename}")
                     chart_saved = True
@@ -682,7 +683,7 @@ if __name__ == '__main__':
 
                         ax.set_xlabel('Time', fontsize=12)
                         ax.set_ylabel('Option Price', fontsize=12)
-                        ax.set_title('DUAL CROSSOVER Strategy - CE & PE Prices (Auto-detect CE>PE & PE>CE)', fontsize=14)
+                        ax.set_title('DUAL CROSSOVER Strategy - Auto-detect CE>PE & PE>CE)', fontsize=14)
                         ax.grid(True, alpha=0.3)
                         ax.legend(loc='upper right')
 
@@ -760,9 +761,9 @@ if __name__ == '__main__':
                 print(f"Final data exported to {OUTPUT_FILE}")
                 now = datetime.now(tz=ZoneInfo('Asia/Kolkata'))
                 if offline == 0:
-                    chart_filename = now.strftime("./logs_50/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_online.png")
+                    chart_filename = now.strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_online.png")
                 else:
-                    chart_filename = now.strftime("./logs_50/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_offline.png")
+                    chart_filename = now.strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_offline.png")
                 fig.savefig(chart_filename, dpi=300)
                 print(f"Chart saved as: {chart_filename}")
 
@@ -771,7 +772,7 @@ if __name__ == '__main__':
                 import random
                 print(pl)
                 try:
-                    p_apl = subprocess.check_output("cat ./logs_50/dual_straddle_945am|awk 'END{print}'|awk -F \":\" '{print $19;}'",shell=True)
+                    p_apl = subprocess.check_output("cat ./logs_nifty/dual_straddle_945am|awk 'END{print}'|awk -F \":\" '{print $19;}'",shell=True)
                     p_apl = p_apl.decode("utf-8")
                     print(p_apl)
                     p_apl = float(p_apl)
@@ -849,7 +850,7 @@ if __name__ == '__main__':
         print("DUAL CROSSOVER STRATEGY COMPLETED")
         print("Check log files for detailed analysis:")
         print(f"- Main log: {lfile}")
-        print(f"- Summary log: ./logs_50/dual_straddle_945am")
+        print(f"- Summary log: ./logs_nifty/dual_straddle_945am")
         if offline == 1:
             print(f"- Excel_offline output: {OUTPUT_FILE}")
         else:
@@ -857,6 +858,9 @@ if __name__ == '__main__':
         print("="*80)
     finally:
         if 'fig' in locals() and fig is not None and not chart_saved:
-            chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_50/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_offline.png")
+            if offline ==1:
+                chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_offline.png")
+            else:
+                chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_nifty/Charts/%Y%m%d_%H%M%S_dual_crossover_nifty_straddle_online.png")
             fig.savefig(chart_filename, dpi=300)
             print(f"Chart saved as: {chart_filename}") 

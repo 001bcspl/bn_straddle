@@ -63,7 +63,7 @@ def place_order(tradingSymbol, price, qty, direction, exchangeType, product, ord
     except Exception as e:
         logging.info('Order placement failed: %s', e)
 
-def place_order_sl_limit(tradingSymbol, price, qty, direction, exchangeType, product, orderType, tprice):
+def place_order_sl_limit(tradingSymbol, price, qty, direction, exchangeType, product, orderType,tprice):
     try:
         orderId = kite.place_order(
             variety=kite.VARIETY_REGULAR,
@@ -80,11 +80,12 @@ def place_order_sl_limit(tradingSymbol, price, qty, direction, exchangeType, pro
     except Exception as e:
         logging.info('Order placement failed: %s', e)
 
-def place_limit_order(symbol, buy_sell, quantity, limit_price, exchange="NSE"):
+##### FOR reference ###########################################################################################
+def place_limit_order(symbol, buy_sell,quantity,limit_price, exchange="NSE"):
     if buy_sell == "buy":
-        t_type = kite.TRANSACTION_TYPE_BUY
+        t_type=kite.TRANSACTION_TYPE_BUY
     elif buy_sell == "sell":
-        t_type = kite.TRANSACTION_TYPE_SELL
+        t_type=kite.TRANSACTION_TYPE_SELL
     kite.place_order(tradingsymbol=symbol,
                     exchange=exchange,
                     transaction_type=t_type,
@@ -94,11 +95,11 @@ def place_limit_order(symbol, buy_sell, quantity, limit_price, exchange="NSE"):
                     variety=kite.VARIETY_REGULAR,
                     price=limit_price)
 
-def place_sl_limit_order(symbol, buy_sell, quantity, price, trigger_price, exchange="NSE"):
+def place_sl_limit_order(symbol,buy_sell,quantity, price, trigger_price, exchange="NSE"):
     if buy_sell == "buy":
-        t_type = kite.TRANSACTION_TYPE_BUY
+        t_type=kite.TRANSACTION_TYPE_BUY
     elif buy_sell == "sell":
-        t_type = kite.TRANSACTION_TYPE_SELL
+        t_type=kite.TRANSACTION_TYPE_SELL
     kite.place_order(tradingsymbol=symbol,
                     exchange=exchange,
                     transaction_type=t_type,
@@ -109,11 +110,11 @@ def place_sl_limit_order(symbol, buy_sell, quantity, price, trigger_price, excha
                     price=price,
                     trigger_price=trigger_price)
 
-def place_sl_market_order(symbol, buy_sell, quantity, trigger_price, exchange="NSE"):
+def place_sl_market_order(symbol,buy_sell,quantity, trigger_price, exchange="NSE"):
     if buy_sell == "buy":
-        t_type = kite.TRANSACTION_TYPE_BUY
+        t_type=kite.TRANSACTION_TYPE_BUY
     elif buy_sell == "sell":
-        t_type = kite.TRANSACTION_TYPE_SELL
+        t_type=kite.TRANSACTION_TYPE_SELL
     kite.place_order(tradingsymbol=symbol,
                     exchange=exchange,
                     transaction_type=t_type,
@@ -123,11 +124,11 @@ def place_sl_market_order(symbol, buy_sell, quantity, trigger_price, exchange="N
                     variety=kite.VARIETY_REGULAR,
                     trigger_price=trigger_price)
 
-def place_market_order(symbol, buy_sell, quantity, exchange="NSE"):
+def place_market_order(symbol,buy_sell,quantity,exchange="NSE"):
     if buy_sell == "buy":
-        t_type = kite.TRANSACTION_TYPE_BUY
+        t_type=kite.TRANSACTION_TYPE_BUY
     elif buy_sell == "sell":
-        t_type = kite.TRANSACTION_TYPE_SELL
+        t_type=kite.TRANSACTION_TYPE_SELL
     kite.place_order(tradingsymbol=symbol,
                     exchange=exchange,
                     transaction_type=t_type,
@@ -137,7 +138,7 @@ def place_market_order(symbol, buy_sell, quantity, exchange="NSE"):
                     variety=kite.VARIETY_REGULAR)
 
 def getprice_symbol(atm_strike):
-    global t_ltpce, t_ltppe
+    global t_ltpce,t_ltppe
     global expiry_date
     today = datetime.now(tz=ZoneInfo('Asia/Kolkata'))
     year = today.year
@@ -155,12 +156,12 @@ def getprice_symbol(atm_strike):
     t_symbol_pe = get_symbols(expiry_date.date(), 'BANKNIFTY', atm_strike, 'PE')
     print(t_symbol_ce)
     print(t_symbol_pe)
-    t_symbol_cep = "NFO:" + t_symbol_ce
-    t_symbol_pep = "NFO:" + t_symbol_pe
-    t_ltpce = getCMP(t_symbol_cep)
-    t_ltppe = getCMP(t_symbol_pep)
-    print("ltpce=", t_ltpce)
-    print("ltppe=", t_ltppe)
+    t_symbol_cep="NFO:"+t_symbol_ce
+    t_symbol_pep="NFO:"+t_symbol_pe
+    t_ltpce=getCMP(t_symbol_cep)
+    t_ltppe=getCMP(t_symbol_pep)
+    print("ltpce=",t_ltpce)
+    print("ltppe=",t_ltppe)
 
 def read_last_line_efficient(filename):
     with open(filename, 'rb') as file:
@@ -227,9 +228,9 @@ bp_output = 0
 sl_output = 0
 qty_output = 0
 pl_output = 0
-log_rows_for_excel.append(["TIME", "EVENT", "BP", "SL", "QTY", "PL", "TRADE_TYPE"])
+log_rows_for_excel.append(["TIME", "EVENT", "BP", "SL", "QTY", "PL", "TRADE_TYPE"])  # Added TRADE_TYPE column
 current_event = "NONE"
-trade_type = "NONE"
+trade_type = "NONE"  # NEW: Track which type of trade (CE or PE)
 AMOUNT_INVESTED = 5000
 EACH_BUNDLE = 35
 
@@ -239,11 +240,14 @@ def dual_crossover_detect(ce_ltp, pe_ltp):
 
     AMOUNT_INVESTED = 5000
     EACH_BUNDLE = 35
-
-    if crossover_detect == 0:
+    
+    # DUAL CROSSOVER LOGIC: Check for BOTH CE>PE and PE>CE
+    if crossover_detect == 0:  # No active trade
+        
+        # Case 1: CE crosses ABOVE PE (CE > PE)
         if ce_prev < pe_prev and ce_ltp > pe_ltp and crossover_detect == 0:
             crossover_detect = 1
-            trade_type = "CE_TRADE"
+            trade_type = "CE_TRADE"  # Trading CE option
             crossover_price = ce_ltp
             sl_price = round(0.7 * crossover_price, 2)
             sl_value = round(crossover_price - sl_price, 2)
@@ -263,7 +267,7 @@ def dual_crossover_detect(ce_ltp, pe_ltp):
                 print(f"*** CE > PE CROSSOVER DETECTED! Buying CE at {crossover_price} ***")
         elif ce_prev > pe_prev and ce_ltp < pe_ltp and crossover_detect == 0:
             crossover_detect = 1
-            trade_type = "PE_TRADE"
+            trade_type = "PE_TRADE"  # Trading PE option
             crossover_price = pe_ltp
             sl_price = round(0.7 * crossover_price, 2)
             sl_value = round(crossover_price - sl_price, 2)
@@ -338,10 +342,10 @@ def dual_crossover_detect(ce_ltp, pe_ltp):
     pe_prev = pe_ltp
 
 if __name__ == '__main__':
-    paper_trade = 1
-    plot = 1
+    paper_trade=1
+    plot=1
     debug = 1
-    offline = 0
+    offline=0
     time_val = []
     plce_val = []
     plpe_val = []
@@ -369,26 +373,29 @@ if __name__ == '__main__':
     # Create the file name date and time as variable
     now = datetime.now(tz=ZoneInfo('Asia/Kolkata'))
     if offline == 0:
-        OUTPUT_FILE = now.strftime("./logs_100/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty100_straddle_online.xlsx")
+        OUTPUT_FILE = now.strftime("./logs_BankNifty/Excel_File/%Y%m%d_%H%M_dual_crossover_BankNifty_straddle_online.xlsx")
     else:
-        OUTPUT_FILE = now.strftime("./logs_100/Excel_File/%Y%m%d_%H%M_dual_crossover_nifty100_straddle_offline.xlsx")
+        OUTPUT_FILE = now.strftime("./logs_BankNifty/Excel_File/%Y%m%d_%H%M_dual_crossover_BankNifty_straddle_offline.xlsx")
 
     if offline == 0:
-        lfile = now.strftime("./logs_100/lfile/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_online.txt")
+        lfile = now.strftime("./logs_BankNifty/lfile/%Y%m%d_%H%M_dual_crossover_BankNifty_straddle_online.txt")
     else:
-        lfile = now.strftime("./logs_100/lfile/%Y%m%d_%H%M_dual_crossover_nifty50_straddle_offline.txt")
+        lfile = now.strftime("./logs_BankNifty/lfile/%Y%m%d_%H%M_dual_crossover_BankNifty_straddle_offline.txt")
     day = now.strftime("%Y%m%d")
     print("creating log file --> ", lfile)
     
-    os.makedirs('./logs_100/Excel_File', exist_ok=True)
-    os.makedirs('./logs_100/lfile', exist_ok=True)
+    os.makedirs('./logs_BankNifty/Charts', exist_ok=True)
+    os.makedirs('./logs_BankNifty/Excel_File', exist_ok=True)
+    os.makedirs('./logs_BankNifty/lfile', exist_ok=True)
+
+
     with open(f'{lfile}', 'w', encoding='utf-8') as f:
         f.write('--------------------- DUAL CROSSOVER Strategy Starting (CE>PE & PE>CE) ---------------------------' + '\n')
         f.write(f'{now.strftime(" %d - %m - %Y ::: %H:%M:%S ")}'+ '\n')
         f.write('---------------------------------------------------------' + '\n')
 
     filename = lfile
-    file1 = open("./logs_100/dual_straddle_945am", "a")
+    file1 = open("./logs_BankNifty/dual_straddle_945am", "a")
     papertrade = 0
 
     atm_strike = round_to_multiple(getCMP('NSE:NIFTY BANK'), 100)
@@ -528,7 +535,7 @@ if __name__ == '__main__':
             ltppe = round(ltppe,2)
             plpe = round(plpe,2)
 
-            if offline in [0, 1]:
+            if offline == 1:
                 if i >= len(df):
                     i = 0
                     output_df = pd.DataFrame(log_rows_for_excel[1:], columns=log_rows_for_excel[0])
@@ -572,9 +579,9 @@ if __name__ == '__main__':
 
                     # Save chart before breaking
                     if offline == 0: 
-                        chart_filename = now.strftime("./logs_100/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_online.png")
+                        chart_filename = now.strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_online.png")
                     else:
-                        chart_filename = now.strftime("./logs_100/%Y%m%d_%H%M%S_dual_crossover_nifty50_straddle_offline.png")
+                        chart_filename = now.strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_offline.png")
                     fig.savefig(chart_filename, dpi=300)
                     print(f"Chart saved as: {chart_filename}")
                     chart_saved = True
@@ -649,7 +656,7 @@ if __name__ == '__main__':
 
                         ax.set_xlabel('Time', fontsize=12)
                         ax.set_ylabel('Option Price', fontsize=12)
-                        ax.set_title('DUAL CROSSOVER Strategy - CE & PE Prices (Auto-detect CE>PE & PE>CE)', fontsize=14)
+                        ax.set_title('DUAL CROSSOVER Strategy - Auto-detect CE>PE & PE>CE)', fontsize=14)
                         ax.grid(True, alpha=0.3)
                         ax.legend(loc='upper right')
 
@@ -727,9 +734,9 @@ if __name__ == '__main__':
                 print(f"Final data exported to {OUTPUT_FILE}")
                 now = datetime.now(tz=ZoneInfo('Asia/Kolkata'))
                 if offline == 0:
-                    chart_filename = now.strftime("./logs_100/%Y%m%d_%H%M%S_dual_crossover_nifty100_straddle_online.png")
+                    chart_filename = now.strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_online.png")
                 else:
-                    chart_filename = now.strftime("./logs_100/%Y%m%d_%H%M%S_dual_crossover_nifty100_straddle_offline.png")
+                    chart_filename = now.strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_offline.png")
                 fig.savefig(chart_filename, dpi=300)
                 print(f"Chart saved as: {chart_filename}")
 
@@ -738,7 +745,7 @@ if __name__ == '__main__':
                 import random
                 print(pl)
                 try:
-                    p_apl = subprocess.check_output("cat ./logs_100/dual_straddle_945am|awk 'END{print}'|awk -F \":\" '{print $19;}'",shell=True)
+                    p_apl = subprocess.check_output("cat ./logs_BnakNifty/dual_straddle_945am|awk 'END{print}'|awk -F \":\" '{print $19;}'",shell=True)
                     p_apl = p_apl.decode("utf-8")
                     print(p_apl)
                     p_apl = float(p_apl)
@@ -816,7 +823,7 @@ if __name__ == '__main__':
         print("DUAL CROSSOVER STRATEGY COMPLETED")
         print("Check log files for detailed analysis:")
         print(f"- Main log: {lfile}")
-        print(f"- Summary log: ./logs_100/dual_straddle_945am")
+        print(f"- Summary log: ./logs_BankNifty/dual_straddle_945am")
         if offline == 1:
             print(f"- Excel_offline output: {OUTPUT_FILE}")
         else:
@@ -824,7 +831,10 @@ if __name__ == '__main__':
         print("="*80)
     finally:
         if 'fig' in locals() and fig is not None and not chart_saved:
-            chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_100/%Y%m%d_%H%M%S_dual_crossover_nifty100_straddle_offline.png")
+            if offline ==1:
+                chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_offline.png")
+            else:
+                chart_filename = datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime("./logs_BankNifty/Charts/%Y%m%d_%H%M%S_dual_crossover_BankNifty_straddle_offline.png")
             fig.savefig(chart_filename, dpi=300)
             print(f"Chart saved as: {chart_filename}")
 
