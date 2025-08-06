@@ -16,7 +16,7 @@
 
 # **Version 4:** 
 - In this version the Strategy1 is implemented
-- Strtegy1 : Log file generation is retained from Version 0. In this the strategy implimented is,
+- Strategy1 : Log file generation is retained from Version 0. In this the strategy implimented is,
 - ->**If offline = 0**: The program fetches live data and performs the necessary calculations.(No input files needed).
 - -> **If offline = 1**: It reads data from an Excel sheet and computes the corresponding values. (edata_a.xlsx, edata_b.xlsx, edata_c.xlsx, these input files are needed).
 - -> **When plot = 0**: Only the output values are printed.
@@ -25,7 +25,7 @@
 - 1. bank_ce_pe_sty50_V4.py : ATM Strike, 50-point CE/PE strategy.
 - 2. bank_ce_pe_sty100_V4.py: ATM Strike, 100-point CE/PE strategy
 - **Usage** :python3 bank_ce_pe_sty50_V4.py or python3 bank_ce_pe_sty100_V4.py
-- *bank_ce_pe_stg1_V4.py* and *nifty_ce_pe_stg1_V4.py* are updated version of Version4.
+- *bank_ce_pe_sty1_V4.py* and *nifty_ce_pe_sty1_V4.py* are updated version of Version4.
   
 # **Version 5:**
 - To be done
